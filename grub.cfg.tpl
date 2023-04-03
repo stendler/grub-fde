@@ -1,0 +1,82 @@
+set default_color="$color_normal"
+set log_level=$ENV_GRUB_LOG_LEVEL
+
+function error {
+  if test $log_level -ge 1; then
+    set color_normal=white/red
+    echo "[ERROR] $1"
+    set color_normal="$default_color"
+  fi
+}
+
+function debug {
+  if test $log_level -ge 3; then
+    set color_normal=white/cyan
+    echo "[DEBUG] $1"
+    set color_normal="$default_color"
+  fi
+}
+
+function try_mount {
+  debug "function start"
+  if
+   cryptomount -u $ENV_GRUB_CRYPTODISK_UUID
+  then
+    if [ x$feature_platform_search_hint = xy ]; then
+      debug "feature_platform_search_hint"
+      search --no-floppy --fs-uuid --set=root --hint='$ENV_GRUB_HINT' $ENV_GRUB_FS_UUID
+    else
+      debug "no feature_platform_search_hint - set directly"
+      search --no-floppy --fs-uuid --set=root $ENV_GRUB_FS_UUID
+    fi
+    debug "root: $root"
+    set prefix=($root)'$ENV_GRUB_CHAINLOAD_PREFIX'
+    debug "prefix: $prefix"
+    return 0
+  else
+    error "cryptomount failed with $?"
+    return 1
+  fi
+}
+
+
+until try_mount; do
+  set color_normal=red/black
+  echo "Wrong password. Try again in..."
+  set color_normal="$default_color"
+  sleep --verbose 5
+  clear
+done
+
+
+debug "prefix: $prefix"
+debug "root: $root"
+
+function test_file {
+  if
+    test -f "$1"
+  then
+    debug "file exists: $1"
+  else
+    error "FILE DOES NOT EXIST: $1"
+  fi
+}
+
+if test $log_level -ge 1; then
+  test_file "$prefix$ENV_GRUB_CHAINLOAD_EFI"
+  sleep --interruptible --verbose 60
+  echo ''
+  set pager=1
+  set debug=all
+fi
+
+chainloader $prefix$ENV_GRUB_CHAINLOAD_EFI
+
+set chainload_return=$?
+if test $chainload_return -ge 1; then
+  if test $log_level -ge 1; then
+   set debug=''
+   error "Failed to chainload with $chainload_return"
+   sleep --interruptible --verbose 12000
+  fi
+fi

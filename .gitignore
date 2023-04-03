@@ -1,0 +1,9 @@
+# configuration
+.env
+
+# output files
+grub.cfg
+*.efi*
+*.EFI*
+
+memdisk.tar

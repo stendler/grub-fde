@@ -1,0 +1,91 @@
+#!/usr/bin/env bash
+
+# script to check for dependencies and prepare a .env file as configuration
+
+function check_deps() {
+  echo "Checking dependencies..." >&2
+  let deps_available=0
+
+  printf "\tgrub:               " >&2
+  which grub-probe >/dev/null 2>/dev/null
+  (( deps_available |= $? ))
+  which grub-mkimage >/dev/null 2>/dev/null
+  (( deps_available |= $? ))
+  test $deps_available == "0" && echo "✅ " >&2 || echo "❌ " >&2
+
+  printf "\tenvsubst:           " >&2
+  which envsubst >/dev/null 2>/dev/null
+  dep_envsubst=$?
+  (( deps_available |= $dep_envsubst ))
+  test $dep_envsubst == "0" && echo "✅ " >&2 || echo "❌ (check that you have installed the gettext package)" >&2
+
+  printf "\tqemu-system-x86_64: " >&2
+  which qemu-system-x86_64 >/dev/null 2>/dev/null
+  dep_qemu=$?
+  (( deps_available |= $dep_qemu ))
+  test $dep_qemu == "0" && echo "✅ " >&2 || echo "❌ (check that you have the package qemu-system-x86 installed)" >&2
+
+  printf "\tedk2-ovmf:          " >&2
+  test -f /usr/share/ovmf/x64/OVMF.fd
+  dep_ovmf=$?
+  (( deps_available |= $dep_ovmf ))
+  test $dep_ovmf == "0" && echo "✅ " >&2 || echo "❌ " >&2
+
+  echo >&2
+  if ! [ $deps_available == "0" ]; then
+    echo >&2 "Not all required dependencies installed! Aborting..."
+    exit "1"
+  fi
+}
+
+
+check_deps
+
+echo >&2 'Now retrieving environment. Use `./configure > .env` and `source .env`, if you are sure the output is fine.'
+echo >&2
+
+#if [ -f ".env" ]; then
+#  read -n 1 -p "Existing .env configuration found. Use it as a baseline? [Y/n] " >&2 source_env
+#  case "$source_env" in
+#    n|N) ;;
+#    *) source ".env" ;;
+#  esac
+#fi
+#echo >&2
+echo "#!/usr/bin/env bash"
+echo "# configured values to be substituted in the grub.cfg template"
+echo
+
+export ENV_GRUB_LOG_LEVEL=0
+echo "export ENV_GRUB_LOG_LEVEL=0"
+echo >&2 "Setting log level to $ENV_GRUB_LOG_LEVEL. Set to 0 to turn off or 3 or higher for full debug logs."
+
+disk=$(df --output=source /boot | sed -n "2p")
+echo "Assuming $disk to be the luks encrypted disk containing /boot" >&2
+
+if [ -z "$ENV_GRUB_CRYPTODISK_UUID" ]; then
+  export ENV_GRUB_CRYPTODISK_UUID=$(sudo grub-probe -t cryptodisk_uuid -d "$disk")
+fi
+echo "export ENV_GRUB_CRYPTODISK_UUID=$ENV_GRUB_CRYPTODISK_UUID"
+
+if [ -z "$ENV_GRUB_FS_UUID" ]; then
+  export ENV_GRUB_FS_UUID=$(sudo grub-probe -t fs_uuid -d "$disk")
+fi
+echo "export ENV_GRUB_FS_UUID=$ENV_GRUB_FS_UUID"
+
+if [ -z "$ENV_GRUB_HINT" ]; then
+  export ENV_GRUB_HINT=$(sudo grub-probe -t efi_hints -d "$disk")
+fi
+echo "export ENV_GRUB_HINT=$ENV_GRUB_HINT"
+
+if [ -z "$ENV_GRUB_CHAINLOAD_PREFIX" ]; then
+  export ENV_GRUB_CHAINLOAD_PREFIX="/boot/grub"
+fi
+sudo test -d "$ENV_GRUB_CHAINLOAD_PREFIX" || echo "❌ ERROR - $ENV_GRUB_CHAINLOAD_PREFIX does not exist. Please check and possibly set manually" >&2
+echo "export ENV_GRUB_CHAINLOAD_PREFIX=$ENV_GRUB_CHAINLOAD_PREFIX"
+
+if [ -z "$ENV_GRUB_CHAINLOAD_EFI" ]; then
+  export ENV_GRUB_CHAINLOAD_EFI="/x86_64-efi/grub.efi"
+fi
+sudo test -f "$ENV_GRUB_CHAINLOAD_PREFIX$ENV_GRUB_CHAINLOAD_EFI" || echo >&2 "❌ ERROR - $ENV_GRUB_CHAINLOAD_PREFIX$ENV_GRUB_CHAINLOAD_EFI does not exist. Was grub-install ever run? Please set manually"
+echo "export ENV_GRUB_CHAINLOAD_EFI=$ENV_GRUB_CHAINLOAD_EFI"

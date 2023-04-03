@@ -1,0 +1,78 @@
+#!/bin/sh
+
+output="BOOTX64.EFI"
+if [ $# -gt 0 ]; then
+  output="$1"
+fi
+
+dir="."
+if [ -d "$1" ]; then
+  dir="$1"
+  output="$output.efi"
+fi
+
+echo "Using $dir/grub.cfg for $output"
+
+(cd "$dir" \
+  && envsubst '$ENV_GRUB_CRYPTODISK_UUID $ENV_GRUB_FS_UUID $ENV_GRUB_HINT $ENV_GRUB_CHAINLOAD_PREFIX $ENV_GRUB_CHAINLOAD_EFI $ENV_GRUB_LOG_LEVEL' \
+    < grub.cfg.tpl > grub.cfg \
+  && tar -cf memdisk.tar grub.cfg)
+
+## create a efi grub boot image
+## the config gets embedded and should decrypt the disk and chainload the grub residing there
+## loaded modules should only be necessary for what's happening in the embedded script
+## todo maybe some eyecandy --> distinguishable for me that everything works as it should ;D
+grub-mkimage --config "pre.cfg" --compression auto --output "$output" \
+  --format x86_64-efi --memdisk="$dir/memdisk.tar" \
+  --prefix "" \
+    memdisk tar \
+    fat \
+    part_gpt \
+    normal \
+    test \
+    search \
+    search_fs_uuid \
+    cryptodisk \
+    luks \
+    lvm \
+    xfs \
+    ext2 \
+    configfile \
+    gcry_sha512 \
+    gcry_rijndael \
+    echo \
+    chain \
+    sleep
+
+## about the mods used
+## ===================
+# | mod            | description
+# |----------------|--------------------
+# | fat            | support read fat fs
+# | part_gpt       | support gpt partitions
+# | test           | command to test expressions
+# | search         | ?
+# | search_fs_uuid | 
+# | cryptodisk     | encryption
+# | luks           | luks encryption
+# | lvm            | lvm support
+# | (xfs)          | xfs support (acer uni-laptop)
+# | ext2           | ext2 support
+# | configfile     | read the "chainloaded" configfile
+# | gcry_sha256    | sha256 for encryption
+# | (gcry_sha512)  | how about using that? which other are needed for luks?
+# | gcry_rijndael  | for encryption
+# |----------------|--------------------
+# | other interesting mods |
+# |----------------|-------------------
+# | gfmenu         | eyecandy?
+# | hashsum        | check hashsums: to check external sources like images
+# | jpeg           | eyecandy?
+# | keystatus      | show a caps-lock warning ?
+# | normal         | normal mode ?
+# | png            | eyecandy?
+# | probe          | easier info?
+# | progress       | eyecandy?
+# | verify         | check file signatures
+# | gcry_rsa       | rsa signatures?
+
