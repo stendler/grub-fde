@@ -17,11 +17,15 @@ Aside from `bash`, `sudo`, `df`, `sed`, and `tar`, `./configure` checks for need
 ## Usage
 
 ```sh
-./configure > .env # to check dependencies and configure the .env file
-cat .env           # to check if everything looks fine
-source .env        # to set the environment for the following commands
+# to check dependencies and configure the .env file
+./configure > .env
+# to check if everything looks fine
+cat .env
+# to set the environment for the following commands
+source .env
 
-./build            # to build the grub.cfg and embedd it into a BOOTX64.EFI file
+# to build the grub.cfg and embedd it into a BOOTX64.EFI file
+./build
 ```
 
 To test if the resulting file actually works, run `./test`.
