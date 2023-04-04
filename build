@@ -28,7 +28,6 @@ grub-mkimage --config "pre.cfg" --compression auto --output "$output" \
     memdisk tar \
     fat \
     part_gpt \
-    normal \
     test \
     search \
     search_fs_uuid \
