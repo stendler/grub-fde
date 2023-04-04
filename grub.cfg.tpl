@@ -44,7 +44,7 @@ until try_mount; do
   set color_normal=red/black
   echo "Wrong password. Try again in..."
   set color_normal="$default_color"
-  sleep --verbose 5
+  sleep --verbose $ENV_GRUB_RETRY_TIMEOUT
   clear
 done
 
