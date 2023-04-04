@@ -30,6 +30,7 @@ dep_ovmf=$?
 (( deps_available |= $dep_ovmf ))
 test $dep_ovmf == "0" && echo "✅ " >&2 || echo "❌ " >&2
 
+echo >&2 "Note: qemu-desktop is recommended to get proper visual output when running ./test"
 echo >&2
 if ! [ $deps_available == "0" ]; then
   echo >&2 "Not all required dependencies installed! Aborting..."

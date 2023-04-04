@@ -12,6 +12,7 @@ Aside from `bash`, `sudo`, `df`, `sed`, and `tar`, `./configure` checks for need
 - `grub` for the commands `grub-probe` and `grub-mkimage`
 - `gettext` for the `envsubst` command
 - `qemu-system-x86` for the `qemu-system-x86_64` command for testing purposes
+  - `qemu-desktop` to get proper visual output
 - `edk2-ovmf` for uefi firmware to test in qemu
 
 ## Usage
