@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env sh
 
 output="BOOTX64.EFI"
 if [ $# -gt 0 ]; then
