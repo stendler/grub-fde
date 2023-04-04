@@ -49,3 +49,5 @@ E.g. if you have the encrypted /boot on a btrfs or zfs filesystem, add those mod
 ## ToDo
 
 - add an `install` command to mount esp, backup the old efi file, copy the new one, and set `efibootmgr` ?
+- detect needed filesystem modules and only load the necessary ones
+- is it possible to pack modules into the memdisk and compress them?
