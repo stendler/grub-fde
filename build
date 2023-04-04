@@ -38,6 +38,7 @@ grub-mkimage --config "pre.cfg" --compression auto --output "$output" \
     xfs \
     ext2 \
     configfile \
+    gcry_sha256 \
     gcry_sha512 \
     gcry_rijndael \
     echo \
