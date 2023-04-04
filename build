@@ -52,16 +52,16 @@ grub-mkimage --config "pre.cfg" --compression auto --output "$output" \
 # | fat            | support read fat fs
 # | part_gpt       | support gpt partitions
 # | test           | command to test expressions
-# | search         | ?
-# | search_fs_uuid | 
+# | search         | to search for the root device
+# | search_fs_uuid | to allow uuids for the search
 # | cryptodisk     | encryption
 # | luks           | luks encryption
 # | lvm            | lvm support
-# | (xfs)          | xfs support (acer uni-laptop)
-# | ext2           | ext2 support
+# | xfs            | xfs support
+# | ext2           | ext2 support (+ ext3/ext4)
 # | configfile     | read the "chainloaded" configfile
 # | gcry_sha256    | sha256 for encryption
-# | (gcry_sha512)  | how about using that? which other are needed for luks?
+# | gcry_sha512    | sha512
 # | gcry_rijndael  | for encryption
 # |----------------|--------------------
 # | other interesting mods |
