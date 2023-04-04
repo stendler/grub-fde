@@ -58,29 +58,19 @@ echo >&2 "Setting log level to $ENV_GRUB_LOG_LEVEL. Set to 0 to turn off or 3 or
 disk=$(df --output=source /boot | sed -n "2p")
 echo "Assuming $disk to be the luks encrypted disk containing /boot" >&2
 
-if [ -z "$ENV_GRUB_CRYPTODISK_UUID" ]; then
-  export ENV_GRUB_CRYPTODISK_UUID=$(sudo grub-probe -t cryptodisk_uuid -d "$disk")
-fi
+export ENV_GRUB_CRYPTODISK_UUID=$(sudo grub-probe -t cryptodisk_uuid -d "$disk")
 echo "export ENV_GRUB_CRYPTODISK_UUID=$ENV_GRUB_CRYPTODISK_UUID"
 
-if [ -z "$ENV_GRUB_FS_UUID" ]; then
-  export ENV_GRUB_FS_UUID=$(sudo grub-probe -t fs_uuid -d "$disk")
-fi
+export ENV_GRUB_FS_UUID=$(sudo grub-probe -t fs_uuid -d "$disk")
 echo "export ENV_GRUB_FS_UUID=$ENV_GRUB_FS_UUID"
 
-if [ -z "$ENV_GRUB_HINT" ]; then
-  export ENV_GRUB_HINT=$(sudo grub-probe -t efi_hints -d "$disk")
-fi
+export ENV_GRUB_HINT=$(sudo grub-probe -t efi_hints -d "$disk")
 echo "export ENV_GRUB_HINT=$ENV_GRUB_HINT"
 
-if [ -z "$ENV_GRUB_CHAINLOAD_PREFIX" ]; then
-  export ENV_GRUB_CHAINLOAD_PREFIX="/boot/grub"
-fi
+export ENV_GRUB_CHAINLOAD_PREFIX="/boot/grub"
 sudo test -d "$ENV_GRUB_CHAINLOAD_PREFIX" || echo "❌ ERROR - $ENV_GRUB_CHAINLOAD_PREFIX does not exist. Please check and possibly set manually" >&2
 echo "export ENV_GRUB_CHAINLOAD_PREFIX=$ENV_GRUB_CHAINLOAD_PREFIX"
 
-if [ -z "$ENV_GRUB_CHAINLOAD_EFI" ]; then
-  export ENV_GRUB_CHAINLOAD_EFI="/x86_64-efi/grub.efi"
-fi
+export ENV_GRUB_CHAINLOAD_EFI="/x86_64-efi/grub.efi"
 sudo test -f "$ENV_GRUB_CHAINLOAD_PREFIX$ENV_GRUB_CHAINLOAD_EFI" || echo >&2 "❌ ERROR - $ENV_GRUB_CHAINLOAD_PREFIX$ENV_GRUB_CHAINLOAD_EFI does not exist. Was grub-install ever run? Please set manually"
 echo "export ENV_GRUB_CHAINLOAD_EFI=$ENV_GRUB_CHAINLOAD_EFI"
