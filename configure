@@ -2,44 +2,39 @@
 
 # script to check for dependencies and prepare a .env file as configuration
 
-function check_deps() {
-  echo "Checking dependencies..." >&2
-  let deps_available=0
+echo "Checking dependencies..." >&2
+let deps_available=0
 
-  printf "\tgrub:               " >&2
-  which grub-probe >/dev/null 2>/dev/null
-  (( deps_available |= $? ))
-  which grub-mkimage >/dev/null 2>/dev/null
-  (( deps_available |= $? ))
-  test $deps_available == "0" && echo "✅ " >&2 || echo "❌ " >&2
+printf "\tgrub:               " >&2
+which grub-probe >/dev/null 2>/dev/null
+(( deps_available |= $? ))
+which grub-mkimage >/dev/null 2>/dev/null
+(( deps_available |= $? ))
+test $deps_available == "0" && echo "✅ " >&2 || echo "❌ " >&2
 
-  printf "\tenvsubst:           " >&2
-  which envsubst >/dev/null 2>/dev/null
-  dep_envsubst=$?
-  (( deps_available |= $dep_envsubst ))
-  test $dep_envsubst == "0" && echo "✅ " >&2 || echo "❌ (check that you have installed the gettext package)" >&2
+printf "\tenvsubst:           " >&2
+which envsubst >/dev/null 2>/dev/null
+dep_envsubst=$?
+(( deps_available |= $dep_envsubst ))
+test $dep_envsubst == "0" && echo "✅ " >&2 || echo "❌ (check that you have installed the gettext package)" >&2
 
-  printf "\tqemu-system-x86_64: " >&2
-  which qemu-system-x86_64 >/dev/null 2>/dev/null
-  dep_qemu=$?
-  (( deps_available |= $dep_qemu ))
-  test $dep_qemu == "0" && echo "✅ " >&2 || echo "❌ (check that you have the package qemu-system-x86 installed)" >&2
+printf "\tqemu-system-x86_64: " >&2
+which qemu-system-x86_64 >/dev/null 2>/dev/null
+dep_qemu=$?
+(( deps_available |= $dep_qemu ))
+test $dep_qemu == "0" && echo "✅ " >&2 || echo "❌ (check that you have the package qemu-system-x86 installed)" >&2
 
-  printf "\tedk2-ovmf:          " >&2
-  test -f /usr/share/ovmf/x64/OVMF.fd
-  dep_ovmf=$?
-  (( deps_available |= $dep_ovmf ))
-  test $dep_ovmf == "0" && echo "✅ " >&2 || echo "❌ " >&2
+printf "\tedk2-ovmf:          " >&2
+test -f /usr/share/ovmf/x64/OVMF.fd
+dep_ovmf=$?
+(( deps_available |= $dep_ovmf ))
+test $dep_ovmf == "0" && echo "✅ " >&2 || echo "❌ " >&2
 
-  echo >&2
-  if ! [ $deps_available == "0" ]; then
-    echo >&2 "Not all required dependencies installed! Aborting..."
-    exit "1"
-  fi
-}
-
-
-check_deps
+echo >&2
+if ! [ $deps_available == "0" ]; then
+  echo >&2 "Not all required dependencies installed! Aborting..."
+  exit "1"
+fi
 
 echo >&2 'Now retrieving environment. Use `./configure > .env` and `source .env`, if you are sure the output is fine.'
 echo >&2
