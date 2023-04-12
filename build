@@ -15,7 +15,7 @@ echo "Using $dir/grub.cfg for $output"
 
 (cd "$dir" \
   && envsubst '$ENV_GRUB_CRYPTODISK_UUID $ENV_GRUB_FS_UUID $ENV_GRUB_HINT $ENV_GRUB_CHAINLOAD_PREFIX $ENV_GRUB_CHAINLOAD_EFI $ENV_GRUB_LOG_LEVEL $ENV_GRUB_RETRY_TIMEOUT' \
-    < grub.cfg.tpl > grub.cfg \
+    < grub.cfg.template > grub.cfg \
   && tar -cf memdisk.tar grub.cfg)
 
 ## create a efi grub boot image
