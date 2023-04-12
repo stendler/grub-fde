@@ -6,4 +6,5 @@ grub.cfg
 *.efi*
 *.EFI*
 
-memdisk.tar
+memdisk/
+memdisk.tar*
