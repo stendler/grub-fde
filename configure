@@ -85,7 +85,7 @@ echo "export ENV_GRUB_MODULES_BASE='$ENV_GRUB_MODULES_BASE'"
 
 # todo test actual needed filesystems
 export ENV_GRUB_MODULES_FS='lvm ext2'
-echo "export ENV_GRUB_MODULES_FS=$ENV_GRUB_MODULES_FS"
+echo "export ENV_GRUB_MODULES_FS='$ENV_GRUB_MODULES_FS'"
 
 # luks or luks2
 export ENV_GRUB_MODULES_LUKS="luks"
