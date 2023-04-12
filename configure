@@ -79,3 +79,17 @@ echo "export ENV_GRUB_CHAINLOAD_PREFIX=$ENV_GRUB_CHAINLOAD_PREFIX"
 export ENV_GRUB_CHAINLOAD_EFI="/x86_64-efi/grub.efi"
 sudo test -f "$ENV_GRUB_CHAINLOAD_PREFIX$ENV_GRUB_CHAINLOAD_EFI" || echo >&2 "❌ ERROR - $ENV_GRUB_CHAINLOAD_PREFIX$ENV_GRUB_CHAINLOAD_EFI does not exist. Was grub-install ever run? Please set manually"
 echo "export ENV_GRUB_CHAINLOAD_EFI=$ENV_GRUB_CHAINLOAD_EFI"
+
+export ENV_GRUB_MODULES_BASE='search search_fs_uuid chain'
+echo "export ENV_GRUB_MODULES_BASE='$ENV_GRUB_MODULES_BASE'"
+
+# todo test actual needed filesystems
+export ENV_GRUB_MODULES_FS='lvm ext2'
+echo "export ENV_GRUB_MODULES_FS=$ENV_GRUB_MODULES_FS"
+
+# luks or luks2
+export ENV_GRUB_MODULES_LUKS="luks"
+echo "export ENV_GRUB_MODULES_LUKS=$ENV_GRUB_MODULES_LUKS"
+
+export ENV_GRUB_MODULES_CRYPTO='cryptodisk gcry_sha256 gcry_sha512 gcry_rijndael'
+echo "export ENV_GRUB_MODULES_CRYPTO='$ENV_GRUB_MODULES_CRYPTO'"

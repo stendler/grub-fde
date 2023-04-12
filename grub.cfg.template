@@ -17,6 +17,11 @@ function debug {
   fi
 }
 
+for mod in $MODULES; do
+  debug "insmod $mod"
+  insmod $mod
+done
+
 function try_mount {
   debug "function start"
   if
@@ -38,7 +43,6 @@ function try_mount {
     return 1
   fi
 }
-
 
 until try_mount; do
   set color_normal=red/black
