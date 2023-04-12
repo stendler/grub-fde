@@ -27,8 +27,9 @@ export MODULES="$ENV_GRUB_MODULES_BASE $ENV_GRUB_MODULES_FS $ENV_GRUB_MODULES_CR
   && cd memdisk \
   && envsubst '$ENV_GRUB_CRYPTODISK_UUID $ENV_GRUB_FS_UUID $ENV_GRUB_HINT $ENV_GRUB_CHAINLOAD_PREFIX $ENV_GRUB_CHAINLOAD_EFI $ENV_GRUB_LOG_LEVEL $ENV_GRUB_RETRY_TIMEOUT $MODULES' \
     < ../grub.cfg.template | $ENV_GRUB_COMPRESS_COMMAND > boot/grub/grub.cfg \
-  && for mod in $MODULES; do $ENV_GRUB_COMPRESS_COMMAND -kc $ENV_GRUB_MODULES_DIR$mod.mod > boot/grub/x86_64-efi/$mod.mod; done \
-  && for mod in normal fshelp extcmd net priority_queue bufio datetime boot terminal gettext echo sleep test configfile part_gpt fat search_label search_fs_file efinet diskfilter procfs afsplitter pbkdf2; do $ENV_GRUB_COMPRESS_COMMAND -kc $ENV_GRUB_MODULES_DIR$mod.mod > boot/grub/x86_64-efi/$mod.mod; done \
+  && for mod in $MODULES; do cat $ENV_GRUB_MODULES_DIR$mod.mod > boot/grub/x86_64-efi/$mod.mod; done \
+  && for mod in normal fshelp extcmd net priority_queue bufio datetime boot terminal gettext echo sleep test configfile part_gpt fat search_label search_fs_file efinet diskfilter procfs afsplitter pbkdf2; do cat $ENV_GRUB_MODULES_DIR$mod.mod > boot/grub/x86_64-efi/$mod.mod; done \
+  && (cd boot/grub && tar -c x86_64-efi | $ENV_GRUB_COMPRESS_COMMAND > ../x86_64-efi.tar.xz && rm -rf x86_64-efi) \
   && tar -cf ../memdisk.tar boot)
 
 ## create a efi grub boot image
@@ -38,6 +39,7 @@ export MODULES="$ENV_GRUB_MODULES_BASE $ENV_GRUB_MODULES_FS $ENV_GRUB_MODULES_CR
 grub-mkimage --config "initial.cfg" --compression auto --output "$output" \
   --format x86_64-efi --memdisk="$dir/memdisk.tar" \
     memdisk tar \
+    loopback \
     `#gzio` \
     xzio \
     `#zstd`
