@@ -22,7 +22,7 @@ echo "Using $dir/grub.cfg for $output"
 ## the config gets embedded and should decrypt the disk and chainload the grub residing there
 ## loaded modules should only be necessary for what's happening in the embedded script
 ## todo maybe some eyecandy --> distinguishable for me that everything works as it should ;D
-grub-mkimage --config "pre.cfg" --compression auto --output "$output" \
+grub-mkimage --config "initial.cfg" --compression auto --output "$output" \
   --format x86_64-efi --memdisk="$dir/memdisk.tar" \
   --prefix "" \
     memdisk tar \
