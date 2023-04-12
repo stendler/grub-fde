@@ -7,7 +7,7 @@ Bonus: A typo in the password simply asks for it again, instead of showing the (
 
 ## Dependencies
 
-Aside from `bash`, `sudo`, `df`, `sed`, and `tar`, `./configure` checks for needed commands and files:
+Aside from `bash`, `sudo`, `df`, `sed`, `xz` and `tar`, `./configure` checks for needed commands and files:
 
 - `grub` for the commands `grub-probe` and `grub-mkimage`
 - `gettext` for the `envsubst` command
@@ -50,4 +50,3 @@ E.g. if you have the encrypted /boot on a btrfs or zfs filesystem, add those mod
 
 - add an `install` command to mount esp, backup the old efi file, copy the new one, and set `efibootmgr` ?
 - detect needed filesystem modules and only load the necessary ones
-- is it possible to pack modules into the memdisk and compress them?
