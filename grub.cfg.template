@@ -1,4 +1,5 @@
-set default_color="$color_normal"
+set default_color="white/black"
+set color_normal="$default_color"
 set log_level=$ENV_GRUB_LOG_LEVEL
 
 function error {
