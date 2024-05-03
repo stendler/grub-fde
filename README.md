@@ -80,11 +80,11 @@ Optional build args and their default values:
 ### Run custom grub container
 
 ```sh
-podman run -it --name grub --volume "$(pwd)":/opt/app --workdir /opt/app grub
+podman run -it --name grub --volume "$(pwd)":/opt/app --workdir /opt/app grub:2.12
 ```
 
 ```sh
-docker run -it --name grub --volume "$(pwd)":/opt/app --workdir /opt/app grub
+docker run -it --name grub --volume "$(pwd)":/opt/app --workdir /opt/app localhost/grub:2.12
 ```
 
 Add `ENV_GRUB_MODULES_DIR=/usr/local/lib/grub/x86_64-efi/` to your env, source it and you can build with the grub version in this container now.
