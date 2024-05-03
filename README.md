@@ -54,7 +54,8 @@ You could check the terminal (press `C`) and then `TAB` if all relevant commands
 
 **This uses your actual encrypted drive. I'm not sure if it is safe to boot from that, so make sure to cancel by going to the terminal that invoked `./test` and running `Ctrl+C`!**
 
-You can now copy the BOOTX64.EFI file into your esp partition. Make sure to make a backup of your previous file. 
+You can now copy the BOOTX64.EFI file into your esp partition. Make sure to make a backup of your previous file.
+**PLEASE DO NOT JUST OVERRIDE ANY FILES IN YOUR ESP.**
 
 ## Using a different grub version
 
@@ -101,3 +102,4 @@ E.g. if you have the encrypted /boot on a btrfs or zfs filesystem, add those mod
 
 - add an `install` command to mount esp, backup the old efi file, copy the new one, and set `efibootmgr` ?
 - detect needed filesystem modules automatically in configure and only load the necessary ones
+- secure boot?
