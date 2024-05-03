@@ -14,12 +14,14 @@ RUN mkdir -p /opt \
     
 # GRUB Git ref (tag, or commit sha)
 ARG GRUB_REF=grub-2.12
+ARG ARCH=x86_64-linux-gnu
+ENV ARCH=${ARCH}
 # checking out the grub version
 RUN set -x \
     && cd /opt/grub \
     && git checkout ${GRUB_REF} \
     && ./bootstrap \
-    && ./configure --with-platform=efi
+    && ./configure --with-platform=efi --build=${ARCH} --host=${ARCH} --target=${ARCH}
 # now build and install it skipping make check
 RUN set -x \
     && cd /opt/grub \
