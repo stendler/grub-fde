@@ -71,8 +71,10 @@ if test $log_level -ge 1; then
   test_file "$prefix$ENV_GRUB_CHAINLOAD_EFI"
   sleep --interruptible --verbose 60
   echo ''
-  set pager=1
-  set debug=all
+  if test $log_level -ge 4; then
+    set pager=1
+    set debug=all
+  fi
 fi
 
 chainloader $prefix$ENV_GRUB_CHAINLOAD_EFI
