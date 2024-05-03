@@ -92,6 +92,32 @@ Testing with qemu would need to be done on the host though. Same with generating
 
 You could even use the container environment to checkout and build other grub versions (without necessarily rebuilding the container).
 
+## Testing changes to the grub.cfg template
+
+To quickly test changes to the grub.cfg template, you can use the test-vm.env and the `./test-vm` command.
+It will use the `test-luks.qcow2` as the disk with a luks encrypted partition and chainloading a custom grub that prints success. The password is `1234`.
+This avoids qemu having to access your real with long decryption time and potential issues with booting an already running system.
+
+#### How the test-luks.qcow2 was created
+
+The image was created with `qemu-img create -f qcow2 test-luks.qcow2 10M`.
+Then mounted as a disk in virt-manager, booting from a live-system iso to create a gpt and unformatted partition in gparted.
+The LUKS partition was also created while in the live system:
+`cryptsetup luksFormat --pbkdf=pbkdf2 --pbkdf-force-iterations=10000 --luks2-keyslots-size=1M --luks2-metadata-size=2M`
+- pbkdf2 is currently required for grub decrypt support. The newer argon2 in luks2 is not yet supported in grub.
+- a low iteraion count to allow faster decrypt for the test image - please use proper values for actual production use
+- size limits to fit into a relatively small image
+Created an ext4 partition in the luks volume.
+
+The efi to chainload was created with `grub-mkimage --config "test-success.cfg" --output test-success.efi --format x86_64-efi --prefix /boot/grub halt sleep echo`.
+And inserted into the image with `guestfish -a test-luks.qcow2`; running
+- `run`
+- `luks-open /dev/vda1 luks`
+- `mount /dev/mapper/luks /`
+- `mkdir-p /boot/grub/x86_64-efi`
+- `copy-in test-success.efi /`
+- `mv /test-success.efi /boot/grub/x86_64-efi/grub.efi`
+
 ## Troubleshooting
 
 The grub modules defined in `build` are suitable for my setup. They may not be enough on your machine.
