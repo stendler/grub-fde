@@ -5,7 +5,9 @@ FROM ${BASEIMAGE}
 RUN set -x \
     && apt-get update \
     && apt-get upgrade -y \
-    && apt-get install -y git python3 build-essential gawk gettext bison flex pkg-config autoconf automake autopoint \
+    && apt-get install -y git python3 build-essential \
+        gawk gettext bison flex pkg-config autoconf automake autopoint \
+        lzma libfreetype-dev fonts-dejavu libdevmapper-dev rsync \
     && rm -rf /var/lib/apt/lists/*
     
 RUN mkdir -p /opt \
