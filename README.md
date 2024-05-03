@@ -43,6 +43,8 @@ source .env
 ./build
 ```
 
+You can optionally provide a filename to the build command.
+
 To test if the resulting file actually works, run `./test`.
 It should open a qemu window and showing the usual password prompt.
 Check with `<enter>`, that it asks again for your password without throwing you into a prompt.
@@ -53,6 +55,41 @@ You could check the terminal (press `C`) and then `TAB` if all relevant commands
 **This uses your actual encrypted drive. I'm not sure if it is safe to boot from that, so make sure to cancel by going to the terminal that invoked `./test` and running `Ctrl+C`!**
 
 You can now copy the BOOTX64.EFI file into your esp partition. Make sure to make a backup of your previous file. 
+
+## Using a different grub version
+
+To use a different version of grub and its modules than provided by your distro, you can use the `Containerfile` to build a podman/docker image.
+This image checksout a grub version (currently `2.12` by default; configurable via build arg) and compiles that.
+
+### Build custom grub container image
+
+```sh
+podman build -t grub:2.12 .`
+```
+
+```sh
+docker build -f Containerfile -t localhost/grub:2.12 .
+```
+
+Optional build args and their default values:
+- `--build-arg BASEIMAGE=docker.io/library/debian:12`
+- `--build-arg GRUB_REF=grub-2.12` (a git tag or git commit hash)
+- `--build-arg ARCH=x86_64-linux-gnu` to configure grub build, host and target architectures
+
+### Run custom grub container
+
+```sh
+podman run -it --name grub --volume "$(pwd)":/opt/app --workdir /opt/app grub
+```
+
+```sh
+docker run -it --name grub --volume "$(pwd)":/opt/app --workdir /opt/app grub
+```
+
+Add `ENV_GRUB_MODULES_DIR=/usr/local/lib/grub/x86_64-efi/` to your env, source it and you can build with the grub version in this container now.
+Testing with qemu would need to be done on the host though. Same with generating new env files with configure, as the container won't be able to see the luks partition by default.
+
+You could even use the container environment to checkout and build other grub versions (without necessarily rebuilding the container).
 
 ## Troubleshooting
 
