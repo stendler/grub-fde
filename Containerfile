@@ -22,6 +22,7 @@ ENV ARCH=${ARCH}
 RUN set -x \
     && cd /opt/grub \
     && git checkout ${GRUB_REF} \
+    && ./linguas.sh \
     && ./bootstrap \
     && ./configure --with-platform=efi --build=${ARCH} --host=${ARCH} --target=${ARCH}
 # now build and install it skipping make check
